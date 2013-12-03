@@ -1,0 +1,20 @@
+target/
+project/target
+
+### Mac OS
+.DS_Store
+._*
+*~
+### Windows
+Thumnail.db
+
+lib_managed/
+src_managed/
+project/boot/
+
+
+### IntelliJ
+.idea/workspace.xml
+.idea/uiDesigner.xml
+
+.idea/dictionaries/
