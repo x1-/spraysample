@@ -1,20 +1,39 @@
-target/
-project/target
+*.class
 
-### Mac OS
+# Exclude OS X folder attributes
 .DS_Store
 ._*
+Icon
+
+# Exclude temp nibs and swap files
+*~.nib
+*.swp
+
+# Exclude user-specific XCode 3 and 4 files
+*.mode1
+*.mode1v3
+*.mode2v3
+*.perspective
+*.perspectivev3
+*.pbxuser
+*.xcworkspace
+xcuserdata
+
+# backup files
 *~
-### Windows
-Thumnail.db
 
-lib_managed/
-src_managed/
-project/boot/
+# IntelliJ
+*.iml
+*.ipr
+*.iws
+.idea
 
+# eclipse
+.classpath
+.project
+.settings
+out/
 
-### IntelliJ
-.idea/workspace.xml
-.idea/uiDesigner.xml
-
-.idea/dictionaries/
+build/
+.gradle
+target/
