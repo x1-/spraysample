@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="riak-scala-client_2.10-0.8.3.2">
-    <CLASSES>
-      <root url="jar://$USER_HOME$/.ivy2/cache/com.scalapenos/riak-scala-client_2.10/jars/riak-scala-client_2.10-0.8.3.2.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
