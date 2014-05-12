@@ -40,9 +40,6 @@ dependencies {
   compile "io.spray:spray-can_$scalaVersion:$sprayVersion"
   compile "com.github.sstone:amqp-client_$scalaVersion:$amqpVersion"
 
-  compile project(':common')
-  testCompile project(':common').sourceSets.test.output
-
   testCompile "junit:junit:$junitVersion"
   testCompile "org.mockito:mockito-core:$mockitoVersion"
   testCompile "org.specs2:specs2_$scalaVersion:$specs2Version"
