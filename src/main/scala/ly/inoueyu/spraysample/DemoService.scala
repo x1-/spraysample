@@ -8,14 +8,11 @@ import spray.can.Http
 import spray.can.server.Stats
 import spray.util._
 import spray.http._
-import scala.util.matching.Regex
 
 //import spray.httpx.unmarshalling.Deserializer._
-import spray.httpx.unmarshalling.Deserializer
+//import spray.httpx.unmarshalling.Deserializer
 import HttpMethods._
 import MediaTypes._
-
-import ly.inoueyu.spraysample.dict._
 
 /**
  * Created with IntelliJ IDEA.
@@ -31,8 +28,6 @@ class DemoService extends Actor with ActorLogging {
   // a map from connections to chunk handlers
   // will be created on ChunkedRequestStart and removed on ChunkedRequestEnd
   var chunkHandlers = Map.empty[ActorRef, ActorRef]
-
-  val repo = context.actorOf( Props(new UserBucket(sender)), "repo" )
 
   def receive = {
     // when a new connection comes in we register ourselves as the connection handler
@@ -66,42 +61,6 @@ class DemoService extends Actor with ActorLogging {
     case HttpRequest(GET, Uri.Path(path), _, _, _) if path startsWith "/timeout" =>
       log.info("Dropping request, triggering a timeout")
 
-    case HttpRequest(GET, Uri.Path(path), _, _, _) if path startsWith "/user" =>
-      log.info("Get User!")
-      val rex : Regex = """\/user\/([0-9]+)""".r
-      path match {
-        case rex( q ) =>
-          val peer = sender
-          val b = context.actorOf( Props( new UserBucket(peer) ) )
-          b ! UserBucketProtocol.FetchUserById( q )
-          //repo.tell( UserBucketProtocol.FetchUserById( q ), sender )
-          //sender ! HttpResponse(entity = "Starting to get User:" + q )
-        case _ =>
-          sender ! HttpResponse(entity = "Not Match User Id.")
-      }
-
-    case HttpRequest(GET, Uri.Path("/create"), _, _, _) =>
-      log.info("Starting Create New Riak Bucket....")
-      repo ! UserBucketProtocol.Create
-
-    case HttpRequest(GET, Uri.Path("/close-riak"), _, _, _) =>
-      log.info("Shutting Down Riak Connection....")
-      repo ! UserBucketProtocol.Close
-      sender ! HttpResponse(entity = "ADDED!")
-
-    case HttpRequest(POST, Uri.Path("/user"), headers, entity, _) =>
-      log.info("Now, trying to add user to riak...")
-      log.info("entity:" + entity.asString(HttpCharsets.`UTF-8`))
-
-      val fd = Deserializer.FormDataUnmarshaller(entity)
-      log.info("des:id:" + fd.get.fields("id"))
-      log.info("des:name:" + fd.get.fields("name"))
-
-      //repo ! UserRepositoryProtocol.StoreUser( User( fd.get.fields("id"), fd.get.fields("name") ) )
-      repo ! UserBucketProtocol.StoreUser( new User( fd.get.fields("id"), fd.get.fields("name") ) )
-
-      sender ! HttpResponse(entity = "ADDED!")
-
     case _: HttpRequest => sender ! HttpResponse(status = 404, entity = "Unknown resource!")
 
     case c: MessageChunk => chunkHandlers(sender).tell(c, sender)
@@ -121,9 +80,6 @@ class DemoService extends Actor with ActorLogging {
     case s: String if s startsWith "status:" =>
       sender ! HttpResponse(entity = s)
 
-    case u: User =>
-      log.debug( "FOUNDED USER and Presentation Now!" )
-      sender ! userPresentation( u )
   }
 
   ////////////// helpers //////////////
@@ -180,19 +136,7 @@ class DemoService extends Actor with ActorLogging {
       </html>.toString()
     )
   )
-  def userPresentation(u: User) = HttpResponse(
-    entity = HttpEntity(`text/html`,
-      <html>
-        <body>
-          <h2>User Found!</h2>
-          <table>
-            <tr><td>id:</td><td>{u.getId}</td></tr>
-            <tr><td>name:</td><td>{u.getName}</td></tr>
-          </table>
-        </body>
-      </html>.toString()
-    )
-  )
+
   class Streamer(client: ActorRef, count: Int) extends Actor with ActorLogging {
     log.debug("Starting streaming response ...")
 
